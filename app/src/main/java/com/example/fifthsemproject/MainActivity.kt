@@ -8,8 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -17,9 +15,10 @@ import com.example.fifthsemproject.presentation.navigation.BottomNav
 import com.example.fifthsemproject.presentation.navigation.Screen
 import com.example.fifthsemproject.presentation.screens.GPTScreen
 import com.example.fifthsemproject.presentation.screens.ImageToText
-import com.example.fifthsemproject.presentation.viewmodels.GPTViewModel
 import com.example.fifthsemproject.ui.theme.FifthSemProjectTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private val mainViewModel by viewModels<MainViewModel>()
@@ -38,10 +37,7 @@ class MainActivity : ComponentActivity() {
                             BottomNav(mainViewModel, mainNavController)
                         }
                         composable(Screen.ChatGPT.route){
-                            val context = LocalContext.current
-                            val gptViewModel: GPTViewModel = viewModel()
-                            gptViewModel.loadMessages(context = context)
-                            GPTScreen(gptViewModel)
+                            GPTScreen()
                         }
                         composable(route = Screen.ImageToText.route) {
                             ImageToText()

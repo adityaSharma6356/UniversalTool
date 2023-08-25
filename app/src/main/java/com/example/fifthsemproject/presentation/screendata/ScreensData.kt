@@ -7,7 +7,7 @@ import com.example.fifthsemproject.presentation.navigation.Screen
 data class AiScreensData(
     val itemsList: List<ItemData> = listOf(
         ItemData("ChatGPT - 3.5", R.drawable.gpt_icon, Color(26, 182, 143, 255),Screen.ChatGPT),
-        ItemData("Text Recognition/Translate", R.drawable.imgtotext, Color(61, 109, 255, 255), Screen.ImageToText),
+        ItemData("Text Recognition/Translation", R.drawable.imgtotext, Color(61, 109, 255, 255), Screen.ImageToText),
     )
 )
 

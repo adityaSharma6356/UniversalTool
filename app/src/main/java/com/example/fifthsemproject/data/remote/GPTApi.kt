@@ -1,57 +1,35 @@
 package com.example.fifthsemproject.data.remote
 
-import android.content.ContentProviderOperation.newCall
-import android.content.Context
-import android.content.SharedPreferences
-import android.preference.PreferenceManager
 import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import com.example.fifthsemproject.domain.models.SingleConversation
+import com.example.fifthsemproject.domain.models.SingleInteraction
+import com.example.fifthsemproject.util.Resource
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.*
+import okhttp3.Call
+import okhttp3.Callback
 import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.Response
 import org.json.JSONArray
 import org.json.JSONObject
-import org.json.JSONStringer
 import java.io.IOException
 import java.util.concurrent.TimeUnit
+import javax.inject.Singleton
 
-const val API_KEY = "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"
-
-class Gpt3ApiManager(private val apiKey: String) {
-
-    fun storeMessage(context: Context, message: Message) {
-        val messages = getMessages(context)
-        messages.add(message)
-
-        val gson = Gson()
-        val json = gson.toJson(messages)
-
-        val sharedPreferences = context.getSharedPreferences("releaseid", Context.MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
-        editor.putString("somenewid", json)
-        editor.apply()
-    }
-    fun getMessages(context: Context): MutableList<Message> {
-        val sharedPreferences = context.getSharedPreferences("releaseid", Context.MODE_PRIVATE)
-        val json = sharedPreferences.getString("somenewid", null)
-        val type = object : TypeToken<MutableList<Message>>() {}.type
-        return Gson().fromJson(json, type) ?: mutableListOf()
-    }
-    var loading by mutableStateOf(false)
-    var messageReceived by mutableStateOf(false)
-    suspend fun makeApiRequest(onDone:() -> Unit, context: Context,prompt: String, onResponse: (String) -> Unit, onError: (String) -> Unit) {
-        loading = true
+@Singleton
+class Gpt3ApiManager {
+    suspend fun makeApiRequest(
+        data: SingleConversation,
+        apiKey: String,
+        prompt: String,
+        onResponse: (Resource<SingleInteraction>) -> Unit,
+    ) {
         val url = "https://api.openai.com/v1/chat/completions"
-
-        val history = getMessages(context)
+        Log.d("gptlog", "entered api")
         val jsbArray = JSONArray().apply {
-
-            Log.d("gptapilog", history.toString())
-            history.forEach {
+            data.conversation.forEach {
                 val jsbMessage = JSONObject()
                     .apply {
                         put("role", it.role)
@@ -85,39 +63,38 @@ class Gpt3ApiManager(private val apiKey: String) {
 
         val client = OkHttpClient.Builder()
             .connectTimeout(20, TimeUnit.SECONDS)
-            .readTimeout(60, TimeUnit.SECONDS)
+            .readTimeout(120, TimeUnit.SECONDS)
             .build()
 
-        storeMessage(context, Message("user", prompt))
-
-        client.newCall(request) .enqueue(object : Callback {
+        Log.d("gptlog", "starting call with ${request.body.toString()}")
+        client.newCall(request).enqueue(object : Callback {
             override fun onResponse(call: Call, response: Response) {
+
                 val responseBody: String = response.body?.string() ?: "Error"
+                Log.d("gptlog", "response received: ${response.toString()}")
                 val gson = Gson()
                 val chatCompletionResponse = gson.fromJson(responseBody, ChatCompletionResponse::class.java)
-                loading = false
-                Log.d("gptapilog", chatCompletionResponse.toString())
                 val contentMessage = chatCompletionResponse.choices?.get(0)?.message?.content
                 val roleMessage = chatCompletionResponse.choices?.get(0)?.message?.role
+
                 if(contentMessage!=null && roleMessage!=null){
-                    val newMessage = Message(content = contentMessage, role = roleMessage)
-                    storeMessage(context, newMessage)
+                    val currentDateTime: java.util.Date = java.util.Date()
+                    val currentTimestamp: Long = currentDateTime.time
+                    onResponse(Resource.Success(SingleInteraction(content = contentMessage, role = roleMessage, time = currentTimestamp)))
+                    onResponse(Resource.Loading(false))
+                    Log.d("gptlog", "response received ${contentMessage+roleMessage}")
+                } else {
+                    Log.d("gptlog", "data null form api : ${contentMessage.toString()+roleMessage.toString()}")
                 }
-                onResponse(contentMessage ?: "")
-                onDone()
-                messageReceived = true
             }
-
             override fun onFailure(call: Call, e: IOException) {
-                loading = false
-                onError("Error: ${e.message}")
+                onResponse(Resource.Error(null, e.message.toString()))
+                onResponse(Resource.Loading(false))
+                Log.d("gptlog", "response error message: ${e.message}")
             }
-
-
         })
     }
 }
-
 data class ChatCompletionResponse(
     val id: String? = null,
     val `object`: String? = null,
