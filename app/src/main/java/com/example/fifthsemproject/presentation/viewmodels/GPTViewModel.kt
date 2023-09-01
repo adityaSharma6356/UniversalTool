@@ -9,16 +9,19 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.fifthsemproject.domain.models.NotificationData
+import com.example.fifthsemproject.domain.models.PushNotification
 import com.example.fifthsemproject.domain.models.SingleConversation
 import com.example.fifthsemproject.domain.models.SingleInteraction
 import com.example.fifthsemproject.domain.repositories.DataRepository
+import com.example.fifthsemproject.presentation.services.Constants.Companion.TOPIC
+import com.example.fifthsemproject.presentation.services.RetrofitInstance
 import com.example.fifthsemproject.util.Resource
 import com.google.mlkit.nl.languageid.LanguageIdentification
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.intellij.lang.annotations.Language
 import java.util.Locale
 import javax.inject.Inject
 
@@ -30,19 +33,38 @@ class GPTViewModel @Inject constructor(
     var loadingResponse by mutableStateOf(false)
     var outgoingMessage by mutableStateOf(SingleInteraction("user", ""))
     var messagesHistory = mutableStateListOf<SingleConversation>()
-    var currentChat by mutableStateOf(SingleConversation())
+    private var currentChat by mutableStateOf(SingleConversation())
     var selectedItemIndex by mutableStateOf(0)
-    var loadingLanguage by mutableStateOf(false)
+    var messagingEnabled by mutableStateOf(true)
     var currentDataToDisplay = mutableStateListOf<SingleInteraction>()
-    var ttsText by mutableStateOf("")
+    private var ttsText by mutableStateOf("")
     var ttsEngine : TextToSpeech? = null
-    var detectedLanguage = "en"
-
+    var notifyKeyFailure by mutableStateOf(false)
+    private var detectedLanguage = "en"
     init {
         getChats()
+        messagingEnabled = dataRepository.loadKey()
+    }
+    fun sendNotification() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val temp = PushNotification(
+                NotificationData("GPT currently unavailable, key will be updated shortly", "")
+                ,TOPIC
+            )
+            try {
+                val response = RetrofitInstance.api.postNotification(temp)
+                if (response.isSuccessful) {
+//                    Log.d("messagelog" , "Response: ${Gson().toJson(response)}")
+                } else {
+                    Log.e("messagelog", response.errorBody().toString())
+                }
+            } catch (e: Exception) {
+                Log.e("messagelog", e.toString())
+            }
+        }
     }
     fun detectLanguage(text: String) {
-        loadingLanguage = true
+        loadingResponse = true
         val languageIdentifier = LanguageIdentification.getClient()
         languageIdentifier.identifyLanguage(text)
             .addOnSuccessListener { languageCode ->
@@ -64,13 +86,16 @@ class GPTViewModel @Inject constructor(
             }
     }
     private fun speak(text: String){
-        if(text.isBlank()) return
+        if(text.isBlank()) {
+            loadingResponse = false
+            return
+        }
         viewModelScope.launch {
             if(ttsEngine!=null){
                 if(ttsEngine!!.isSpeaking && text==ttsText){
                     ttsEngine!!.stop()
                     detectedLanguage = "en"
-                    loadingLanguage = false
+                    loadingResponse = false
                     return@launch
                 }
                 ttsText = text
@@ -79,9 +104,9 @@ class GPTViewModel @Inject constructor(
                 ttsEngine!!.language = Locale(detectedLanguage)
                 ttsEngine!!.speak(ttsText, TextToSpeech.QUEUE_FLUSH, null, null)
                 detectedLanguage = "en"
-                loadingLanguage = false
+                loadingResponse = false
             }
-            loadingLanguage = false
+            loadingResponse = false
         }
     }
 
@@ -159,6 +184,10 @@ class GPTViewModel @Inject constructor(
                         }
                     }
                     is Resource.Error ->{
+                        if(result.message=="401"){
+                            notifyKeyFailure = true
+                            messagingEnabled = false
+                        }
                         Log.d("gptlog", result.message.toString())
                     }
                     is Resource.Loading ->{
@@ -168,9 +197,7 @@ class GPTViewModel @Inject constructor(
                 }
             }.collect{ result ->
                 when(result){
-                    is Resource.Success ->{
-
-                    }
+                    is Resource.Success -> Unit
                     is Resource.Error ->{
                         Log.d("gptlog", result.message.toString())
                     }

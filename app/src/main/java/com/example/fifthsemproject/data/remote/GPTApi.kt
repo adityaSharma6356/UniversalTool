@@ -20,7 +20,7 @@ import javax.inject.Singleton
 
 @Singleton
 class Gpt3ApiManager {
-    suspend fun makeApiRequest(
+    fun makeApiRequest(
         data: SingleConversation,
         apiKey: String,
         prompt: String,
@@ -71,7 +71,7 @@ class Gpt3ApiManager {
             override fun onResponse(call: Call, response: Response) {
 
                 val responseBody: String = response.body?.string() ?: "Error"
-                Log.d("gptlog", "response received: ${response.toString()}")
+                Log.d("gptlog", "response received first: ${response.toString()}")
                 val gson = Gson()
                 val chatCompletionResponse = gson.fromJson(responseBody, ChatCompletionResponse::class.java)
                 val contentMessage = chatCompletionResponse.choices?.get(0)?.message?.content
@@ -81,11 +81,14 @@ class Gpt3ApiManager {
                     val currentDateTime: java.util.Date = java.util.Date()
                     val currentTimestamp: Long = currentDateTime.time
                     onResponse(Resource.Success(SingleInteraction(content = contentMessage, role = roleMessage, time = currentTimestamp)))
-                    onResponse(Resource.Loading(false))
                     Log.d("gptlog", "response received ${contentMessage+roleMessage}")
                 } else {
+                    val errorCode = response.code
+                    Log.d("messagelog" , "error code: $errorCode")
+                    onResponse(Resource.Error(null, errorCode.toString()))
                     Log.d("gptlog", "data null form api : ${contentMessage.toString()+roleMessage.toString()}")
                 }
+                onResponse(Resource.Loading(false))
             }
             override fun onFailure(call: Call, e: IOException) {
                 onResponse(Resource.Error(null, e.message.toString()))

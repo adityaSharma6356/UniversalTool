@@ -22,4 +22,6 @@ interface DataRepository {
     suspend fun setPrompt()
 
     fun saveUserKey(key: String)
+
+    fun loadKey() : Boolean
 }

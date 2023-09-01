@@ -10,7 +10,12 @@ data class AiScreensData(
         ItemData("Text Recognition/Translation", R.drawable.imgtotext, Color(61, 109, 255, 255), Screen.ImageToText),
     )
 )
+class Colors {
+    companion object {
+        val gptColor = Color(26, 182, 143, 255)
+    }
 
+}
 data class ItemData(
     val title: String,
     val icon: Int,

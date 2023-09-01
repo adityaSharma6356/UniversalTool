@@ -6,7 +6,6 @@ import com.example.fifthsemproject.data.remote.Gpt3ApiManager
 import com.example.fifthsemproject.domain.models.*
 import com.example.fifthsemproject.domain.repositories.DataRepository
 import com.example.fifthsemproject.util.Resource
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
@@ -16,7 +15,7 @@ import javax.inject.Singleton
 class DataRepositoryImpl @Inject constructor(
     private val database: GPTDatabase,
 ): DataRepository{
-    private var key = "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"
+    private var key = "sk-cHQRynnV1E3bjtXHkaoZT3BlbkFJXAu0weonmxSbVNVZ1tZ"//A
     private var tempData: List<SingleConversation>? = null
     private val api = Gpt3ApiManager()
     override suspend fun getAllChats(): Resource<List<SingleConversation>> {
@@ -64,7 +63,7 @@ class DataRepositoryImpl @Inject constructor(
                     )
                     dataToSend = newConv
                     Log.d("gptlog2", newConv.toString())
-                    var newItem = mutableListOf(newConv)
+                    val newItem = mutableListOf(newConv)
                     Log.d("gptlog2", "old one updated with: ${newItem.size}")
                     newItem.addAll(storedData.data!!)
                     val x = newItem.toMutableList().add(newConv)
@@ -133,5 +132,9 @@ class DataRepositoryImpl @Inject constructor(
 
     override fun saveUserKey(key: String) {
         database.storeNewApiKey(key)
+    }
+    override fun loadKey(): Boolean {
+        key = database.getUserProvidedKey()
+        return database.getMessagingState()
     }
 }

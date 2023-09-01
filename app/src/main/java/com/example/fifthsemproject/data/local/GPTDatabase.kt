@@ -4,7 +4,6 @@ import android.content.Context
 import android.util.Log
 import com.example.fifthsemproject.domain.models.SingleConversation
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import javax.inject.Singleton
 
 @Singleton
@@ -12,20 +11,21 @@ class GPTDatabase(
     val context: Context
 ) {
     private val apiKey = "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"
-    private var userKeyGiven = false
     private val hiTag = "gptallconversations"
     private val lowTag = "gptconversations"
+
     fun storeNewApiKey(key:String){
         val sharedPreferences = context.getSharedPreferences("gptuserprovidedkey", Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         editor.putString("userkey", key)
         editor.apply()
-        userKeyGiven = true
+    }
+    fun getMessagingState(): Boolean {
+        val sharedPreferences =
+            context.getSharedPreferences("gptuserprovidedkey", Context.MODE_PRIVATE)
+        return sharedPreferences.getBoolean("messagingstate", true)
     }
     fun getUserProvidedKey(): String{
-        if(!userKeyGiven){
-            return apiKey
-        }
         val sharedPreferences = context.getSharedPreferences("gptuserprovidedkey", Context.MODE_PRIVATE)
         val key = sharedPreferences.getString("userkey", apiKey)
         return key!!

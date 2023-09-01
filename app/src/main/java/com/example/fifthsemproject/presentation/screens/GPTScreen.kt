@@ -14,49 +14,34 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Card
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion.Bottom
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.fifthsemproject.R
 import com.example.fifthsemproject.domain.models.SingleInteraction
@@ -212,7 +197,9 @@ fun DrawerScreen(gptViewModel: GPTViewModel, state: DrawerState){
                                 })
                         }
                     },
-                    colors = NavigationDrawerItemDefaults.colors(selectedContainerColor = Color(12, 121, 0, 255)),
+                    colors = NavigationDrawerItemDefaults.colors(
+                        unselectedContainerColor = Color(30, 37, 41, 255),
+                        selectedContainerColor = Color(12, 121, 0, 255)),
                     label = { Text(text = title.content, maxLines = 1) },
                     selected = index==gptViewModel.selectedItemIndex,
                     onClick = {
@@ -233,117 +220,20 @@ fun DrawerScreen(gptViewModel: GPTViewModel, state: DrawerState){
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun GPTScreenContent(
-    gptViewModel: GPTViewModel,
-    drawerState: DrawerState
-){
-    val state = if(gptViewModel.currentDataToDisplay.isNotEmpty()) rememberLazyListState(initialFirstVisibleItemIndex = gptViewModel.currentDataToDisplay.lastIndex) else rememberLazyListState()
-    val context = LocalContext.current
-    val scope = rememberCoroutineScope()
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .background(Color(24, 24, 24, 255))){
-        Icon(
-            painter = painterResource(id = R.drawable.right_icon),
-            contentDescription = "drawer",
-            tint = Color.Gray,
-            modifier = Modifier
-                .padding(5.dp)
-                .background(Color(34, 34, 34, 255), RoundedCornerShape(10.dp))
-                .size(50.dp)
-                .zIndex(2f)
-                .padding(5.dp)
-                .clickable { scope.launch { drawerState.open() } }
-        )
-        Column(
-            verticalArrangement = Arrangement.Bottom,
-            modifier = Modifier
-                .padding(bottom = 75.dp)
-                .fillMaxSize()) {
-            if(gptViewModel.currentDataToDisplay.isNotEmpty()){
-                LazyColumn(
-                    state = state
-                ){
-                    itemsIndexed(gptViewModel.currentDataToDisplay, key = { _, item -> item.time }){ _, item ->
-                        ConversationScreen(
-                            role = item.role,
-                            conversation = item.content,
-                            gptViewModel
-                        )
-                    }
-                }
-                TextToSpeechComponent(gptViewModel = gptViewModel)
-            } else {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Center) {
-                    Text(text = "Send a message like saying \"hi\"", color = Color.White)
-                }
-            }
-        }
-        val lfm = LocalFocusManager.current
-        Row(modifier = Modifier
-            .fillMaxWidth()
-            .align(Alignment.BottomCenter)) {
-            TextField(
-                enabled = !gptViewModel.loadingResponse,
-                shape = RoundedCornerShape(10.dp),
-                colors = TextFieldDefaults.textFieldColors(
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent,
-                    disabledTextColor = Color(184, 192, 255, 255)
-                ),
-                modifier = Modifier
-                    .padding(5.dp, 10.dp)
-                    .weight(1f),
-                value = gptViewModel.outgoingMessage.content,
-                onValueChange = { gptViewModel.outgoingMessage = gptViewModel.outgoingMessage.copy(content = it) },
-                trailingIcon = {
-                    if (gptViewModel.loadingResponse)
-                        CircularProgressIndicator(
-                        modifier = Modifier.size(20.dp),
-                        color = Color.White,
-                        strokeWidth = 2.dp
-                    )
-                },
-                placeholder = { Text(text = "Ask any question") },
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Go),
-                keyboardActions = KeyboardActions(onGo = {
-                    lfm.clearFocus()
-                    gptViewModel.sendMessage(state, scope)
-                })
-            )
-            Icon(
-                painter = painterResource(id = R.drawable.send_icon),
-                contentDescription = null,
-                tint = Color.Gray,
-                modifier = Modifier
-                    .padding(5.dp, 0.dp, 10.dp, 23.dp)
-                    .size(30.dp)
-                    .align(Bottom)
-                    .clickable {
-                        lfm.clearFocus()
-                        gptViewModel.sendMessage(state, scope)
-                    }
-            )
-        }
-    }
-}
-
 @Composable
 fun ConversationScreen(role: String, conversation: String , gptViewModel: GPTViewModel){
     if(role=="user"){
-        Row(modifier = Modifier
+        Row(
+            horizontalArrangement = Arrangement.End,
+            modifier = Modifier
             .fillMaxWidth()
             .defaultMinSize(0.dp, 50.dp)) {
-            Spacer(modifier = Modifier.weight(1f))
             Text(text = conversation,
                 modifier = Modifier
                     .padding(30.dp, 10.dp, 5.dp, 10.dp)
                     .background(Color(0, 0, 0, 255), RoundedCornerShape(15.dp))
                     .padding(10.dp),
-                color = Color(255, 255, 255, 255),
+                color = Color(255, 255, 255, 210),
                 fontSize = 16.sp
             )
             Icon(
@@ -369,7 +259,7 @@ fun ConversationScreen(role: String, conversation: String , gptViewModel: GPTVie
                 modifier = Modifier
                     .padding(0.dp, 10.dp, 30.dp, 10.dp)
                     .fillMaxWidth()
-                    .background(Color(12, 121, 0, 255), RoundedCornerShape(15.dp))
+                    .background(Color(30, 37, 41, 255), RoundedCornerShape(15.dp))
                     .padding(10.dp),
             ) {
                 Row(modifier = Modifier
@@ -377,17 +267,10 @@ fun ConversationScreen(role: String, conversation: String , gptViewModel: GPTVie
                     .fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = "ChatGPT:",
-                        color = Color(255, 255, 255, 255),
+                        color = Color(255, 255, 255, 148),
                         fontSize = 13.sp
                     )
                     Spacer(modifier = Modifier.weight(1f))
-//                    if(gptViewModel.loadingLanguage){
-//                        CircularProgressIndicator(
-//                            modifier = Modifier.size(15.dp),
-//                            color = Color.White,
-//                            strokeWidth = 2.dp
-//                        )
-//                    }
                     Text(
                         text = "Speak: ",
                         color = Color(102, 140, 255, 255),
@@ -406,7 +289,7 @@ fun ConversationScreen(role: String, conversation: String , gptViewModel: GPTVie
                 }
                 Text(
                     text = conversation,
-                    color = Color(255, 255, 255, 255),
+                    color = Color(255, 255, 255, 210),
                     fontSize = 16.sp
                 )
             }
@@ -430,6 +313,4 @@ fun TextToSpeechComponent(gptViewModel: GPTViewModel) {
             gptViewModel.ttsEngine = null
         }
     }
-
-
 }
