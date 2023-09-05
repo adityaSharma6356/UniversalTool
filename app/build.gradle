@@ -21,11 +21,12 @@ android {
         vectorDrawables {
             useSupportLibrary true
         }
+        signingConfig signingConfigs.debug
     }
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -126,6 +127,17 @@ dependencies {
     kapt "androidx.room:room-compiler:$room_version"
 
     implementation 'com.google.mlkit:language-id:17.0.4'
+
+    // exoplayer
+    implementation "androidx.media3:media3-exoplayer:1.1.1"
+    implementation "androidx.media3:media3-exoplayer-dash:1.1.1"
+    implementation "androidx.media3:media3-ui:1.1.1"
+
+//    implementation "com.github.bumptech.glide:compose:1.0.0"
+
+    implementation "io.coil-kt:coil-compose:2.4.0"
+
+    implementation "androidx.constraintlayout:constraintlayout-compose:1.0.1"
 
 
 }

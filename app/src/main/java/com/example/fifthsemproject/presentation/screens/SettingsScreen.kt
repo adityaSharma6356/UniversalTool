@@ -36,7 +36,7 @@ import com.example.fifthsemproject.R
 import com.example.fifthsemproject.domain.models.NotificationData
 import com.example.fifthsemproject.domain.models.PushNotification
 import com.example.fifthsemproject.presentation.navigation.Screen
-import com.example.fifthsemproject.presentation.screendata.Colors.Companion.gptColor
+import com.example.fifthsemproject.presentation.screendata.UniversalColors.Companion.gptColor
 import com.example.fifthsemproject.presentation.screendata.ItemData
 import com.example.fifthsemproject.presentation.services.Constants.Companion.ADMIN_PASSWORD
 import com.example.fifthsemproject.presentation.services.Constants.Companion.TOPIC

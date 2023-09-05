@@ -1,4 +1,4 @@
-package com.example.fifthsemproject.presentation.screens
+package com.example.fifthsemproject.presentation.screens.gpt
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -56,7 +56,7 @@ fun GPTScreenContent(
             contentDescription = "drawer",
             tint = Color.Gray,
             modifier = Modifier
-                .padding(5.dp)
+                .padding(start = 5.dp, top = 50.dp)
                 .background(Color(34, 34, 34, 255), RoundedCornerShape(10.dp))
                 .size(50.dp)
                 .zIndex(2f)

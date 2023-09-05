@@ -1,4 +1,4 @@
-package com.example.fifthsemproject.presentation.screens
+package com.example.fifthsemproject.presentation.screens.gpt
 
 import android.speech.tts.TextToSpeech
 import androidx.compose.foundation.background

@@ -1,4 +1,4 @@
-package com.example.fifthsemproject.presentation.screens
+package com.example.fifthsemproject.presentation.screens.image_to_pdf
 
 import android.Manifest
 import android.graphics.Bitmap
@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon

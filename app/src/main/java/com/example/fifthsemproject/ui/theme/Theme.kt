@@ -1,7 +1,9 @@
 package com.example.fifthsemproject.ui.theme
 
 import android.app.Activity
+import android.graphics.Color.toArgb
 import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
@@ -15,6 +17,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
+import com.example.fifthsemproject.presentation.screendata.UniversalColors.Companion.backgroundColor
 
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
@@ -38,6 +41,7 @@ private val LightColorScheme = lightColorScheme(
     */
 )
 
+@RequiresApi(Build.VERSION_CODES.R)
 @Composable
 fun FifthSemProjectTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
@@ -58,7 +62,8 @@ fun FifthSemProjectTheme(
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
-            window.statusBarColor = Color.Black.toArgb()
+            window.statusBarColor = backgroundColor.toArgb()
+            window.setDecorFitsSystemWindows(false)
             WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = false
         }
     }

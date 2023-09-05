@@ -14,8 +14,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -41,19 +39,22 @@ import androidx.navigation.compose.rememberNavController
 import com.example.fifthsemproject.MainViewModel
 import com.example.fifthsemproject.R
 import com.example.fifthsemproject.presentation.screens.AiScreen
-import com.example.fifthsemproject.presentation.screens.ImageToText
+import com.example.fifthsemproject.presentation.screens.MediaScreen
 import com.example.fifthsemproject.presentation.screens.MenuScreen
 import com.example.fifthsemproject.presentation.screens.SettingsScreen
 
 
 sealed class Screen(val route: String,val label: String,@DrawableRes val icon: Int, @DrawableRes val offIcon: Int) {
     object Menu : Screen("menu", " Home", R.drawable.menu_icon, R.drawable.ai_icon)
-    object Music : Screen("music", "Music", R.drawable.music, R.drawable.music)
+    object Media : Screen("media", "Media", R.drawable.music, R.drawable.music)
     object Ai : Screen("a_i", " AI Tools", R.drawable.ai_icon, R.drawable.ai_icon)
     object Settings : Screen("settings", " Settings", R.drawable.settings, R.drawable.settings)
     object MainFront : Screen("main_front", "MainFront", R.drawable.settings, R.drawable.settings)
     object ChatGPT : Screen("chat_gpt", "ChetGPT", R.drawable.gpt_icon, R.drawable.gpt_icon)
     object ImageToText : Screen("image_to_text", "ImageToText", R.drawable.imgtotext, R.drawable.imgtotext)
+    object Music : Screen("music", "Music", R.drawable.music_icon, R.drawable.music_icon)
+    object OnlineMusic : Screen("online_music", "Online Music", R.drawable.online_music_icon, R.drawable.online_music_icon)
+    object CurrentPlayer : Screen("current_player_screen", "Playing", R.drawable.online_music_icon, R.drawable.online_music_icon)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -62,24 +63,25 @@ fun BottomNav(mainViewModel: MainViewModel, mainNavController: NavHostController
     val navController = rememberNavController()
     Scaffold(
         topBar = {
-            if(mainViewModel.visibleAbout){
-                Dialog(onDismissRequest = { mainViewModel.visibleAbout = false}) {
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(300.dp)
-                            .background(
-                                Color(
-                                    24,
-                                    24,
-                                    24,
-                                    255
-                                )
-                            )) {
-                        Text(text = "by Aditya Sharma :)", fontSize = 15.sp, color = Color.White)
+                if(mainViewModel.visibleAbout){
+                    Dialog(onDismissRequest = { mainViewModel.visibleAbout = false}) {
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(300.dp)
+                                .background(
+                                    Color(
+                                        24,
+                                        24,
+                                        24,
+                                        255
+                                    )
+                                )) {
+                            Text(text = "by Aditya Sharma :)", fontSize = 15.sp, color = Color.White)
+                        }
                     }
-                }
+
             }
             Row(horizontalArrangement = Arrangement.End,modifier = Modifier
                 .fillMaxWidth()
@@ -115,19 +117,18 @@ fun BottomNavGraph(
 ) {
     NavHost(
         navController = navController,
-        startDestination = Screen.Ai.route
+        startDestination = Screen.Menu.route
     ) {
         composable(route = Screen.Menu.route) {
             MenuScreen()
         }
-        composable(route = Screen.Music.route) {
-            MenuScreen()
+        composable(route = Screen.Media.route) {
+            MediaScreen(mainNavController)
         }
         composable(route = Screen.Ai.route) {
             AiScreen(
                 mainViewModel = mainViewModel,
-                navController = mainNavController,
-                screen = Screen.Ai
+                navController = mainNavController
             )
         }
         composable(route = Screen.Settings.route) {
@@ -139,7 +140,7 @@ fun BottomNavGraph(
 fun BottomBar(navController: NavHostController) {
     val screens = listOf(
         Screen.Menu,
-        Screen.Music,
+        Screen.Media,
         Screen.Ai,
         Screen.Settings
     )

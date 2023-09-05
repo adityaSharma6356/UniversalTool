@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.DefaultTintColor
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -29,7 +30,6 @@ import com.example.fifthsemproject.presentation.screendata.ItemData
 
 @Composable
 fun ItemsListScreen(
-    mainViewModel: MainViewModel,
     itemList:List<ItemData>,
     onClick:(screen: Screen) -> Unit
 ){
@@ -79,7 +79,7 @@ fun SingleButton(
             painter = painterResource(id = itemData.icon),
             contentDescription = null,
             modifier = Modifier.size(30.dp),
-            tint = itemData.iconColor
+            tint = itemData.iconColor ?: DefaultTintColor
         )
         Text(
             text = itemData.title,
