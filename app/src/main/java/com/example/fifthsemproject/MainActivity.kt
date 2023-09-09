@@ -11,10 +11,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -23,10 +25,14 @@ import com.example.fifthsemproject.presentation.navigation.Screen
 import com.example.fifthsemproject.presentation.screendata.UniversalColors
 import com.example.fifthsemproject.presentation.screens.gpt.GPTScreen
 import com.example.fifthsemproject.presentation.screens.image_to_pdf.ImageToText
+import com.example.fifthsemproject.presentation.screens.location.LocationObserverScreen
+import com.example.fifthsemproject.presentation.screens.location.LocationShareScreen
 import com.example.fifthsemproject.presentation.screens.music.LocalMusic
 import com.example.fifthsemproject.presentation.screens.music.OnlineMusic
 import com.example.fifthsemproject.presentation.screens.music.BottomMusicControllerScreen
 import com.example.fifthsemproject.presentation.screens.music.CurrentMusicScreen
+import com.example.fifthsemproject.presentation.viewmodels.LocationObserveViewModel
+import com.example.fifthsemproject.presentation.viewmodels.LocationViewModel
 import com.example.fifthsemproject.ui.theme.FifthSemProjectTheme
 import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.AndroidEntryPoint
@@ -62,6 +68,16 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(Screen.ChatGPT.route){
                             GPTScreen()
+                        }
+                        composable(Screen.LocationShare.route){
+                            val temp : LocationViewModel = viewModel()
+                            temp.isSharingLocation = mainViewModel.getLocationShareInfo(this@MainActivity)
+                            temp.isServiceOn = mainViewModel.getServiceInfo(this@MainActivity)
+                            temp.enabled = temp.isServiceOn && temp.isSharingLocation
+                            LocationShareScreen(temp)
+                        }
+                        composable(Screen.LocationObserve.route){
+                            LocationObserverScreen()
                         }
                         composable(route = Screen.ImageToText.route) {
                             ImageToText()

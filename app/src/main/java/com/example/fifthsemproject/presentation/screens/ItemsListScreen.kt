@@ -78,8 +78,8 @@ fun SingleButton(
         Icon(
             painter = painterResource(id = itemData.icon),
             contentDescription = null,
-            modifier = Modifier.size(30.dp),
-            tint = itemData.iconColor ?: DefaultTintColor
+            modifier = Modifier.padding(start = 10.dp).size(30.dp),
+            tint = itemData.iconColor ?: Color.Unspecified
         )
         Text(
             text = itemData.title,

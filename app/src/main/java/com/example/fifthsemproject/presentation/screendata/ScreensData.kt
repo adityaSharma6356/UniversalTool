@@ -25,11 +25,21 @@ class MediaScreenData {
         )
     }
 }
+class LocationScreenData {
+    companion object {
+        val itemsList: List<ItemData> = listOf(
+            ItemData("Live Location Sharing", R.drawable.location_icon, null , Screen.LocationShare),
+            ItemData("Live Location Tracking", R.drawable.gps_icon, null , Screen.LocationObserve)
+        )
+    }
+}
+
 class UniversalColors {
     companion object {
         val localMusicColor =  Color(233, 30, 99, 255)
         val gptColor = Color(26, 182, 143, 255)
         val backgroundColor = Color(24, 24, 24, 255)
+        val locationShareColor = Color(0, 166, 255, 255)
     }
 
 }

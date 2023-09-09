@@ -21,8 +21,7 @@ class GPTDatabase(
         editor.apply()
     }
     fun getMessagingState(): Boolean {
-        val sharedPreferences =
-            context.getSharedPreferences("gptuserprovidedkey", Context.MODE_PRIVATE)
+        val sharedPreferences = context.getSharedPreferences("gptuserprovidedkey", Context.MODE_PRIVATE)
         return sharedPreferences.getBoolean("messagingstate", true)
     }
     fun getUserProvidedKey(): String{

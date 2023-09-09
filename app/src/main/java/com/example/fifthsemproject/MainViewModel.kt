@@ -1,6 +1,7 @@
 package com.example.fifthsemproject
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -8,10 +9,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.media3.ui.PlayerNotificationManager
 import com.example.fifthsemproject.data.local.MusicDatabase
 import com.example.fifthsemproject.domain.models.TrackUiStates
 import com.example.fifthsemproject.presentation.services.MusicPlaybackListner
 import com.example.fifthsemproject.presentation.services.MusicPlayer
+import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -23,9 +26,16 @@ class MainViewModel : ViewModel() {
     var seekUpdates by mutableStateOf(true)
     val musicListner = MusicPlaybackListner()
     var musicList = mutableStateListOf<TrackUiStates>()
+
+    @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
     fun setupMusicPlayer(context: Context){
         if(musicPlayer!=null) return
         viewModelScope.launch(Dispatchers.Main) {
+            val notificationManager = PlayerNotificationManager.Builder(
+                context,
+                7303,
+                "UNIVERSAL_MUSIC_CHANNEL"
+            )
             val player = MusicPlayer(context)
             player.setupListners(musicListner)
             musicPlayer = player
@@ -77,6 +87,24 @@ class MainViewModel : ViewModel() {
         }
     }
 
+    fun getLocationShareInfo(context: Context): Boolean{
+        val sharedPreferences = context.getSharedPreferences("universal_location_info", Context.MODE_PRIVATE)
+        return sharedPreferences.getBoolean("sharing_data", false)
+    }
+    fun getServiceInfo(context: Context):Boolean {
+        val sharedPreferences = context.getSharedPreferences("universal_location_info", Context.MODE_PRIVATE)
+        return sharedPreferences.getBoolean("starting_service", false)
+    }
+    fun getIdList(context: Context): List<String> {
+        val sharedPreferences =
+            context.getSharedPreferences("universal_location", Context.MODE_PRIVATE)
+        val json = sharedPreferences.getString("location_ids", "")
+        Log.d("locationLog", "storage opened with data $json")
+        if (json == null) {
+            return listOf()
+        }
+        return Gson().fromJson(json, Array<String>::class.java).asList()
+    }
 }
 
 

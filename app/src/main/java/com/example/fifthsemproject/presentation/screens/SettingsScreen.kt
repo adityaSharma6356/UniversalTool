@@ -151,7 +151,7 @@ fun SettingsScreen(
                 )
         }
         SingleButton(
-            itemData = ItemData("ChatGPT - 3.5", R.drawable.gpt_icon, gptColor,Screen.ChatGPT),
+            itemData = ItemData("Share GPT Key", R.drawable.gpt_icon, gptColor,Screen.ChatGPT),
             onClickScreen = {}
         ) {
             showKeyDialog = true

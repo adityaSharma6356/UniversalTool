@@ -55,6 +55,8 @@ sealed class Screen(val route: String,val label: String,@DrawableRes val icon: I
     object Music : Screen("music", "Music", R.drawable.music_icon, R.drawable.music_icon)
     object OnlineMusic : Screen("online_music", "Online Music", R.drawable.online_music_icon, R.drawable.online_music_icon)
     object CurrentPlayer : Screen("current_player_screen", "Playing", R.drawable.online_music_icon, R.drawable.online_music_icon)
+    object LocationShare : Screen("location_screen", "Location", R.drawable.location_icon, R.drawable.location_icon)
+    object LocationObserve : Screen("location_observe_screen", "Location Observer", R.drawable.gps_icon, R.drawable.gps_icon)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -120,14 +122,13 @@ fun BottomNavGraph(
         startDestination = Screen.Menu.route
     ) {
         composable(route = Screen.Menu.route) {
-            MenuScreen()
+            MenuScreen(mainNavController)
         }
         composable(route = Screen.Media.route) {
             MediaScreen(mainNavController)
         }
         composable(route = Screen.Ai.route) {
             AiScreen(
-                mainViewModel = mainViewModel,
                 navController = mainNavController
             )
         }
