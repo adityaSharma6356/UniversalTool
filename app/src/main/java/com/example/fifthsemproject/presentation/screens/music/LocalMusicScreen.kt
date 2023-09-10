@@ -54,16 +54,30 @@ import com.google.accompanist.permissions.rememberPermissionState
 @Composable
 fun LocalMusic(mainViewModel: MainViewModel) {
 
-    val musicPermissionState: PermissionState = rememberPermissionState(Manifest.permission.READ_EXTERNAL_STORAGE)
+    val musicPermissionState: PermissionState =
+        rememberPermissionState(Manifest.permission.READ_EXTERNAL_STORAGE)
 
-    if(musicPermissionState.status.isGranted){
+    if (musicPermissionState.status.isGranted) {
         LocalMusicScreenContent(mainViewModel)
     } else {
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .background(backgroundColor), contentAlignment = Alignment.Center) {
-            Button(modifier = Modifier.height(60.dp),shape = RoundedCornerShape(10.dp),colors = ButtonDefaults.buttonColors(containerColor = Color(43, 43, 43, 255)),onClick = {musicPermissionState.launchPermissionRequest()}) {
-                Icon(modifier = Modifier.size(20.dp),painter = painterResource(id = R.drawable.music_icon), contentDescription = "Camera", tint = Color.White)
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(backgroundColor),
+            contentAlignment = Alignment.Center
+        ) {
+            Button(
+                modifier = Modifier.height(60.dp),
+                shape = RoundedCornerShape(10.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(43, 43, 43, 255)),
+                onClick = { musicPermissionState.launchPermissionRequest() }
+            ) {
+                Icon(
+                    modifier = Modifier.size(20.dp),
+                    painter = painterResource(id = R.drawable.music_icon),
+                    contentDescription = "Camera",
+                    tint = Color.White
+                )
                 Text(text = "   Grant storage permission", color = Color.White)
             }
         }
@@ -74,15 +88,15 @@ fun LocalMusic(mainViewModel: MainViewModel) {
 fun LocalMusicScreenContent(
     mainViewModel: MainViewModel,
     localMusicVIewModel: LocalMusicVIewModel = viewModel()
-){
+) {
     Row(modifier = Modifier.fillMaxSize()) {
         val state = rememberLazyListState()
         LazyColumn(
             state = state,
             modifier = Modifier
-            .padding(top = 40.dp)
-            .simpleVerticalScrollbar(state), contentPadding = PaddingValues(bottom = 100.dp)) {
-            itemsIndexed(mainViewModel.musicList, key = { _, item -> item.index}){ index, _ ->
+                .simpleVerticalScrollbar(state), contentPadding = PaddingValues(bottom = 100.dp)
+        ) {
+            itemsIndexed(mainViewModel.musicList, key = { _, item -> item.index }) { index, _ ->
                 Row(modifier = Modifier
                     .padding(10.dp, 5.dp)
                     .fillMaxWidth()

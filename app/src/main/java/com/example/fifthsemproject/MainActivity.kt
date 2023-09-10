@@ -46,10 +46,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val permissionLauncher = registerForActivityResult(
-            ActivityResultContracts.RequestPermission()
-        ) {}
-        permissionLauncher.launch(android.Manifest.permission.READ_EXTERNAL_STORAGE)
         FirebaseMessaging.getInstance().subscribeToTopic("GPT_KEY_UPDATES")
         setContent {
             FifthSemProjectTheme {
@@ -60,7 +56,6 @@ class MainActivity : ComponentActivity() {
                 ) {
                     val mainNavController = rememberNavController()
                     NavHost(modifier = Modifier
-                        .padding(bottom = 50.dp)
                         .zIndex(3f),navController = mainNavController, startDestination = Screen.MainFront.route){
                         composable(Screen.MainFront.route){
                             mainViewModel.job?.cancel()

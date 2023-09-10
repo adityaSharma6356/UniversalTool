@@ -38,6 +38,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -60,7 +61,6 @@ fun LocationObserverScreen(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
-            .padding(top = 40.dp)
             .fillMaxSize()
             .background(UniversalColors.backgroundColor)
             .padding(20.dp)) {
@@ -75,7 +75,10 @@ fun LocationObserverScreen(
             .padding(5.dp)
             .clickable {
                 locationObserveViewModel.openAddId = true
-            }, verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+            },
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
             Text(text = "   Add new tracker", color = UniversalColors.locationShareColor, fontSize = 15.sp)
             Icon(
                 painter = painterResource(id = R.drawable.add_icon),
@@ -92,6 +95,7 @@ fun LocationObserverScreen(
                 .height(1.dp)
                 .fillMaxWidth())
         }
+        val context = LocalContext.current
         if(locationObserveViewModel.locationsList.isNotEmpty()){
             locationObserveViewModel.locationsList.forEach { item ->
                 Row(
@@ -99,21 +103,24 @@ fun LocationObserverScreen(
                         .padding(vertical = 5.dp)
                         .fillMaxWidth()
                         .background(Color(41, 41, 41, 255), RoundedCornerShape(15.dp))
-                        .height(90.dp)
-                        .padding(10.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically) {
+                        .padding(10.dp)
+                        .clickable {
+                            locationObserveViewModel.openMapWithLocation(item.location.latitude.toString(), item.location.longitude.toString(), item.name, context)
+                        },
+                    horizontalArrangement = Arrangement.SpaceBetween) {
                     Column(Modifier.weight(1f)) {
-                        Text(text = item.name, fontSize = 15.sp , color = UniversalColors.locationShareColor)
+                        Text(text = item.name, fontSize = 17.sp , color = UniversalColors.locationShareColor, fontWeight = FontWeight.ExtraBold)
                         Text(text = "latitude "+item.location.latitude.toString(), fontSize = 15.sp , color = Color.White)
                         Text(text = "longitude "+item.location.longitude.toString(), fontSize = 15.sp , color = Color.White)
+                        Text(text = "last seen: "+locationObserveViewModel.lastSeenString(item.lastUpdate.seconds), fontSize = 13.sp , color = Color(255, 214, 214, 255)
+                        )
                     }
                     Image(
                         painter = painterResource(id = R.drawable.maps_image),
                         contentDescription = "map",
                         modifier = Modifier
                             .padding(start = 10.dp)
-                            .size(80.dp)
+                            .size(100.dp)
                             .clip(RoundedCornerShape(15.dp))
                     )
                 }

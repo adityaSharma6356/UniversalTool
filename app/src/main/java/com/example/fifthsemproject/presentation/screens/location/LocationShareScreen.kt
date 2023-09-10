@@ -295,21 +295,17 @@ fun LocationTab(
                     }
                 })
         }
-
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .padding(15.dp, 55.dp, 15.dp, 15.dp)
+                .padding(15.dp, 10.dp, 15.dp, 15.dp)
                 .fillMaxWidth()
                 .background(
                     Color(39, 39, 39, 255),
                     RoundedCornerShape(15.dp)
                 )
                 .padding(10.dp)
-                .clickable {
-                    showDialog = true
-                }
         ) {
             Text(
                 text = "   Location Sharing ${if (locationViewModel.isSharingLocation) "Enabled" else "Disabled"}",

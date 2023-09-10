@@ -56,7 +56,7 @@ fun GPTScreenContent(
             contentDescription = "drawer",
             tint = Color.Gray,
             modifier = Modifier
-                .padding(start = 5.dp, top = 50.dp)
+                .padding(start = 5.dp, top = 10.dp)
                 .background(Color(34, 34, 34, 255), RoundedCornerShape(10.dp))
                 .size(50.dp)
                 .zIndex(2f)

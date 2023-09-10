@@ -1,12 +1,9 @@
 package com.example.fifthsemproject.presentation.viewmodels
 
 import android.content.Context
-import android.location.Address
-import android.location.Geocoder
-import android.location.Geocoder.GeocodeListener
-import android.os.Build
+import android.content.Intent
+import android.net.Uri
 import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -25,7 +22,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import retrofit2.HttpException
 import java.io.IOException
-import java.util.Locale
+import kotlin.math.abs
 
 class LocationObserveViewModel:ViewModel() {
     val idList = mutableStateListOf<String>()
@@ -38,7 +35,13 @@ class LocationObserveViewModel:ViewModel() {
     var openAddId by mutableStateOf(false)
     var somethingWentWrong by mutableStateOf(false)
     var tempId by mutableStateOf("")
+    var currentTime : Long = 0L
 
+    init {
+        val currentDateTime: java.util.Date = java.util.Date()
+        val currentTimestamp: Long = currentDateTime.time
+        currentTime = currentTimestamp/1000
+    }
 
     fun getIdList(context: Context){
         val sharedPreferences = context.getSharedPreferences("universal_location", Context.MODE_PRIVATE)
@@ -66,6 +69,34 @@ class LocationObserveViewModel:ViewModel() {
         editor.putString("location_ids", json)
         Log.d("locationLog", "storage created with $json")
         editor.apply()
+    }
+
+    fun openMapWithLocation(lat: String, lng:String, name:String, context: Context){
+        viewModelScope.launch {
+            val geoUri = "http://maps.google.com/maps?q=loc:$lat,$lng ($name)";
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(geoUri))
+            context.startActivity(intent)
+        }
+    }
+
+    fun lastSeenString(time:Long):String{
+        val age = abs(time-currentTime).toInt()
+        if (age < 60) {
+            return "Less than 1 minute ago"
+        }
+        if (age < 3600) {
+            val minutes = age / 60
+            return "$minutes minutes ago"
+        }
+        if (age < 86400) {
+            val hours = age / 3600
+            return if (hours == 1) {
+                "$hours hour ago"
+            } else {
+                "$hours hours ago"
+            }
+        }
+        return "More than 1 day ago"
     }
 
     fun checkDocumentId(id:String){

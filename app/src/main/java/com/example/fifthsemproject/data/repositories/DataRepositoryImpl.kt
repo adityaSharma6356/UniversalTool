@@ -15,7 +15,7 @@ import javax.inject.Singleton
 class DataRepositoryImpl @Inject constructor(
     private val database: GPTDatabase,
 ): DataRepository{
-    private var key = "sk-cHQRynnV1E3bjtXHkaoZT3BlbkFJXAu0weonmxSbVNVZ1tZ"//A
+    private var key = "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"//A
     private var tempData: List<SingleConversation>? = null
     private val api = Gpt3ApiManager()
     override suspend fun getAllChats(): Resource<List<SingleConversation>> {
@@ -110,7 +110,6 @@ class DataRepositoryImpl @Inject constructor(
             } else {
                 emit(tempResponse!!)
             }
-//            emit(Resource.Loading(false))
         }
     }
 

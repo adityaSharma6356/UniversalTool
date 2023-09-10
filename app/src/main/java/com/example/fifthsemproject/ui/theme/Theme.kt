@@ -63,7 +63,6 @@ fun FifthSemProjectTheme(
         SideEffect {
             val window = (view.context as Activity).window
             window.statusBarColor = backgroundColor.toArgb()
-            window.setDecorFitsSystemWindows(false)
             WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = false
         }
     }

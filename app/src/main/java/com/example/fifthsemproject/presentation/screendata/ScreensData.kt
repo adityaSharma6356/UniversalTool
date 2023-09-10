@@ -41,7 +41,6 @@ class UniversalColors {
         val backgroundColor = Color(24, 24, 24, 255)
         val locationShareColor = Color(0, 166, 255, 255)
     }
-
 }
 data class ItemData(
     val title: String,

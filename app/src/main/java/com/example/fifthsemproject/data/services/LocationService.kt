@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.IBinder
 import android.util.Log
+import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import com.example.fifthsemproject.R
 import com.example.fifthsemproject.domain.models.LocationModels
@@ -64,7 +65,7 @@ class LocationService: Service() {
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         locationClient
-            .getLocationUpdates(30000L)
+            .getLocationUpdates(60000L)
             .catch {
                 Log.d("locationlog", "location error ${it.message}")
             }
