@@ -29,7 +29,8 @@ class LocationScreenData {
     companion object {
         val itemsList: List<ItemData> = listOf(
             ItemData("Live Location Sharing", R.drawable.location_icon, null , Screen.LocationShare),
-            ItemData("Live Location Tracking", R.drawable.gps_icon, null , Screen.LocationObserve)
+            ItemData("Live Location Tracking", R.drawable.gps_icon, null , Screen.LocationObserve),
+            ItemData("Codeforces", R.drawable.codeforces_icon, null , Screen.CodeforcesUserInfoScreen)
         )
     }
 }
@@ -40,6 +41,7 @@ class UniversalColors {
         val gptColor = Color(26, 182, 143, 255)
         val backgroundColor = Color(24, 24, 24, 255)
         val locationShareColor = Color(0, 166, 255, 255)
+        val codeforcesColor = Color(243, 195, 66, 200)
     }
 }
 data class ItemData(

@@ -4,6 +4,10 @@ import android.util.Log
 import com.example.fifthsemproject.data.local.GPTDatabase
 import com.example.fifthsemproject.data.remote.Gpt3ApiManager
 import com.example.fifthsemproject.domain.models.*
+import com.example.fifthsemproject.domain.models.codeforces.CodeforcesUserInfoResponse
+import com.example.fifthsemproject.domain.models.codeforces.RatingResponse
+import com.example.fifthsemproject.domain.models.codeforces.SubmissionsResponse
+import com.example.fifthsemproject.domain.repositories.CodeforcesApiService
 import com.example.fifthsemproject.domain.repositories.DataRepository
 import com.example.fifthsemproject.util.Resource
 import kotlinx.coroutines.flow.Flow
@@ -13,11 +17,42 @@ import javax.inject.Singleton
 
 @Singleton
 class DataRepositoryImpl @Inject constructor(
+    private val codeforcesApiService: CodeforcesApiService,
     private val database: GPTDatabase,
 ): DataRepository{
-    private var key = "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"//A
+    private var key = "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"
     private var tempData: List<SingleConversation>? = null
     private val api = Gpt3ApiManager()
+
+    override suspend fun getUserRating(handle: String): RatingResponse {
+        val data = codeforcesApiService.getUserRating(handle)
+        if (data.isSuccessful && data.body()!=null){
+            data.body()!!.result = data.body()!!.result.reversed()
+            return data.body()!!
+        }
+        return RatingResponse()
+    }
+
+    override suspend fun getCodeforcesUserSubmissions(
+        handle: String,
+        from: Int,
+        count: Int
+    ): SubmissionsResponse {
+        val data = codeforcesApiService.getUserStatus(handle, from, count)
+        if (data.isSuccessful && data.body()!=null){
+            return data.body()!!
+        }
+        return SubmissionsResponse()
+    }
+
+    override suspend fun getCodeforcesUser(handle: String): CodeforcesUserInfoResponse {
+        val data = codeforcesApiService.getUserInfo(handle)
+        if (data.isSuccessful && data.body()!=null){
+            return data.body()!!
+        }
+        return CodeforcesUserInfoResponse()
+    }
+
     override suspend fun getAllChats(): Resource<List<SingleConversation>> {
         val data = database.getAllConversations()
         tempData = data

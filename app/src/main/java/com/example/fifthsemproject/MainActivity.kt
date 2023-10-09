@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -23,6 +24,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.fifthsemproject.presentation.navigation.BottomNav
 import com.example.fifthsemproject.presentation.navigation.Screen
 import com.example.fifthsemproject.presentation.screendata.UniversalColors
+import com.example.fifthsemproject.presentation.screens.codeforces.UserInfoScreen
 import com.example.fifthsemproject.presentation.screens.gpt.GPTScreen
 import com.example.fifthsemproject.presentation.screens.image_to_pdf.ImageToText
 import com.example.fifthsemproject.presentation.screens.location.LocationObserverScreen
@@ -31,6 +33,7 @@ import com.example.fifthsemproject.presentation.screens.music.LocalMusic
 import com.example.fifthsemproject.presentation.screens.music.OnlineMusic
 import com.example.fifthsemproject.presentation.screens.music.BottomMusicControllerScreen
 import com.example.fifthsemproject.presentation.screens.music.CurrentMusicScreen
+import com.example.fifthsemproject.presentation.viewmodels.CodeforcesViewModel
 import com.example.fifthsemproject.presentation.viewmodels.LocationObserveViewModel
 import com.example.fifthsemproject.presentation.viewmodels.LocationViewModel
 import com.example.fifthsemproject.ui.theme.FifthSemProjectTheme
@@ -94,13 +97,18 @@ class MainActivity : ComponentActivity() {
                         composable(route = Screen.OnlineMusic.route) {
                             OnlineMusic()
                         }
+                        composable(route = Screen.CodeforcesUserInfoScreen.route) {
+                            val temp : CodeforcesViewModel = hiltViewModel()
+                            temp.getHandles(this@MainActivity)
+                            UserInfoScreen(temp)
+                        }
                         composable(route = Screen.CurrentPlayer.route) {
                             CurrentMusicScreen(
                                 mainViewModel,
                                 mainNavController
                             )
-
                         }
+
                     }
                 }
             }

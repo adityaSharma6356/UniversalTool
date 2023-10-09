@@ -14,7 +14,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
@@ -71,7 +73,7 @@ fun GPTScreen(
 @Composable
 fun DrawerScreen(gptViewModel: GPTViewModel, state: DrawerState){
     ModalDrawerSheet(
-        drawerContainerColor = Color(24, 24, 24, 255),
+        drawerContainerColor = Color(24, 24, 24, 255), modifier = Modifier.verticalScroll(rememberScrollState())
     ) {
         val scope = rememberCoroutineScope()
         NavigationDrawerItem(
@@ -226,8 +228,8 @@ fun ConversationScreen(role: String, conversation: String , gptViewModel: GPTVie
         Row(
             horizontalArrangement = Arrangement.End,
             modifier = Modifier
-            .fillMaxWidth()
-            .defaultMinSize(0.dp, 50.dp)) {
+                .fillMaxWidth()
+                .defaultMinSize(0.dp, 50.dp)) {
             Text(text = conversation,
                 modifier = Modifier
                     .padding(30.dp, 10.dp, 5.dp, 10.dp)
